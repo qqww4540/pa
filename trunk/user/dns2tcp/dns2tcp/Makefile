@@ -1,11 +1,14 @@
 CC = gcc
-CFLAGS = -std=c99 -Wall -Wextra -Wvla -O3 -flto -fno-strict-aliasing -ffunction-sections -fdata-sections -DNDEBUG
-LDFLAGS = -O3 -flto -fno-strict-aliasing -Wl,--gc-sections -s
+CFLAGS = -std=c99 -Wall -Wextra -O2
 LIBS = -lm
-SRCS = dns2tcp.c libev/ev.c
+SRCS = dns2tcp.c
 OBJS = $(SRCS:.c=.o)
 MAIN = dns2tcp
 DESTDIR = /usr/local/bin
+
+EVCFLAGS = -w -O2
+EVSRCFILE = libev/ev.c
+EVOBJFILE = ev.o
 
 .PHONY: all install clean
 
@@ -16,10 +19,13 @@ install: $(MAIN)
 	install -m 0755 $(MAIN) $(DESTDIR)
 
 clean:
-	$(RM) $(MAIN) *.o libev/*.o
+	$(RM) *.o $(MAIN)
 
-$(MAIN): $(OBJS)
-	$(CC) $(LDFLAGS) -o $(MAIN) $(OBJS) $(LIBS)
+$(MAIN): $(EVOBJFILE) $(OBJS)
+	$(CC) $(CFLAGS) -s -o $(MAIN) $(OBJS) $(EVOBJFILE) $(LIBS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
+
+$(EVOBJFILE): $(EVSRCFILE)
+	$(CC) $(EVCFLAGS) -c $(EVSRCFILE) -o $(EVOBJFILE)

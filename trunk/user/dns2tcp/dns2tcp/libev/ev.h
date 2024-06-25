@@ -40,7 +40,7 @@
 #ifndef EV_H_
 #define EV_H_
 
-#include "config.h"
+#include "mylite.h"
 
 #ifdef __cplusplus
 # define EV_CPP(x) x
